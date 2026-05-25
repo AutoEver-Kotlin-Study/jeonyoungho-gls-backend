@@ -7,7 +7,7 @@ plugins {
     kotlin("plugin.spring") version "1.9.25"
 }
 
-group = "com.jeonyongho.notification"
+group = "com.jeonyongho.gls"
 version = "0.0.1-SNAPSHOT"
 description = "jeonyoungho-gls-backend"
 
