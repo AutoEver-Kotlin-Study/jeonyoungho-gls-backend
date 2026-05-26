@@ -1,12 +1,9 @@
 package com.jeonyongho.gls.api.exceptions
 
-import org.springframework.http.HttpStatus
-
 sealed class ApiResponse {
 
     data class Success<T>(
-        val status: Int,
-        val data: T,
+        val contents: T,
     ) : ApiResponse()
 
     data class Failure(
@@ -17,9 +14,7 @@ sealed class ApiResponse {
     ) : ApiResponse()
 
     companion object {
-        fun <T> success(status: Int, data: T): Success<T> = Success(status, data)
-
-        fun <T> success(data: T): Success<T> = Success(HttpStatus.OK.value(), data)
+        fun <T> success(data: T): Success<T> = Success(data)
 
         fun failure(status: Int, code: String, message: String, detail: String? = null): Failure =
             Failure(status, code, message, detail)
