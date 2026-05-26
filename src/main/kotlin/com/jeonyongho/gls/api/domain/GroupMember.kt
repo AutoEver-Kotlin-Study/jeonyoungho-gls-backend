@@ -3,7 +3,7 @@ package com.jeonyongho.gls.api.domain
 import java.time.LocalDateTime
 
 class GroupMember(
-    val id: Long,
+    val id: Long?,
     val groupId: Long,
     val userId: Long,
     val joinedAt: LocalDateTime,

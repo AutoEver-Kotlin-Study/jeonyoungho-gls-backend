@@ -3,7 +3,7 @@ package com.jeonyongho.gls.api.domain
 import java.time.LocalDateTime
 
 class Location(
-    val id: Long,
+    val id: Long?,
     val userId: Long,
     val latitude: Double,
     val longitude: Double,

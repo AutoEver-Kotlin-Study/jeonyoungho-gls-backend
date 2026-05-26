@@ -1,13 +1,10 @@
 package com.jeonyongho.gls.api.domain
 
-import java.time.LocalDateTime
-
 class Group(
-    val id: Long,
+    val id: Long?,
     val name: String,
     val maxMemberCount: Int,
-    val ownerId: Long,
-    val createdAt: LocalDateTime,
+    val ownerId: Long
 ) {
     fun validateOwner(userId: Long) {
         require(isOwner(userId)) { "그룹 생성자만 삭제할 수 있습니다." }
@@ -21,7 +18,6 @@ class Group(
             name = name,
             maxMemberCount = maxMemberCount,
             ownerId = ownerId,
-            createdAt = LocalDateTime.now(),
         )
     }
 }
