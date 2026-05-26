@@ -76,7 +76,7 @@ class GroupService(
 
         groupMemberOutPort.save(GroupMember.create(groupId = group.id, userId = user.id))
 
-        // 기존 멤버에게 SMS 발송 (신규 참여자 제외)
+        // TODO: Spring Event 기반 비동기 처리로 변경 필요(기존 멤버에게 SMS 발송)
         val existingMembers = groupMemberOutPort.findAllByGroupId(group.id)
             .filter { it.userId != user.id }
         existingMembers.forEach { member ->
