@@ -1,5 +1,9 @@
 # 📍 [코틀린 스터디] 그룹 위치 공유 데모 애플리케이션 개발 실습
 
+## 도메인 모델 설계
+<img width="1106" height="544" alt="image" src="https://github.com/user-attachments/assets/93adc9c3-f38b-4efe-9e9b-66a792b2b8cb" />
+
+
 ## API 명세
 
 ### 공통 사항
