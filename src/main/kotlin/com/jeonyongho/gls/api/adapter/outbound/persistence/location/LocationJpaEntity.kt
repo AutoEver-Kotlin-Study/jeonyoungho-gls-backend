@@ -1,5 +1,6 @@
-package com.jeonyongho.gls.api.adapter.outbound.persistence
+package com.jeonyongho.gls.api.adapter.outbound.persistence.location
 
+import com.jeonyongho.gls.api.adapter.outbound.persistence.BaseTimeEntity
 import com.jeonyongho.gls.api.domain.Location
 import jakarta.persistence.*
 import java.time.LocalDateTime

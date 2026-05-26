@@ -1,5 +1,6 @@
-package com.jeonyongho.gls.api.adapter.outbound.persistence
+package com.jeonyongho.gls.api.adapter.outbound.persistence.group
 
+import com.jeonyongho.gls.api.adapter.outbound.persistence.BaseTimeEntity
 import com.jeonyongho.gls.api.domain.Group
 import jakarta.persistence.*
 

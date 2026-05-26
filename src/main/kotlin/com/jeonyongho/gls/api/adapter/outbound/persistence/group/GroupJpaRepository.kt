@@ -1,4 +1,4 @@
-package com.jeonyongho.gls.api.adapter.outbound.persistence
+package com.jeonyongho.gls.api.adapter.outbound.persistence.group
 
 import org.springframework.data.jpa.repository.JpaRepository
 
