@@ -11,7 +11,7 @@ import java.util.concurrent.Executor
 class AsyncConfig {
 
     @Bean("groupSmsExecutor")
-    fun smsExecutor(): Executor = ThreadPoolTaskExecutor().apply {
+    fun groupSmsExecutor(): Executor = ThreadPoolTaskExecutor().apply {
         corePoolSize = 10
         maxPoolSize = 30
         setQueueCapacity(500)
