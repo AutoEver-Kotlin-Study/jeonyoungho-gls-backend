@@ -10,7 +10,10 @@ interface GroupMemberJpaRepository : JpaRepository<GroupMemberJpaEntity, Long> {
     fun findAllByUserId(userId: Long): List<GroupMemberJpaEntity>
     fun existsByGroupIdAndUserId(groupId: Long, userId: Long): Boolean
     fun countByGroupId(groupId: Long): Long
-    fun deleteByGroupIdAndUserId(groupId: Long, userId: Long)
+
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
+    @Query("DELETE FROM GroupMemberJpaEntity gm WHERE gm.groupId = :groupId AND gm.userId = :userId")
+    fun deleteByGroupIdAndUserId(groupId: Long, userId: Long): Int
 
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query("DELETE FROM GroupMemberJpaEntity gm WHERE gm.groupId = :groupId")

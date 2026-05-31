@@ -9,6 +9,7 @@ import jakarta.persistence.*
 class GroupJpaEntity(
     val name: String,
     val maxMemberCount: Int,
+    val currentMemberCount: Int,
     val ownerId: Long,
 
     /**
@@ -24,6 +25,7 @@ class GroupJpaEntity(
         id = id,
         name = name,
         maxMemberCount = maxMemberCount,
+        currentMemberCount = currentMemberCount,
         ownerId = ownerId,
     )
 
@@ -32,6 +34,7 @@ class GroupJpaEntity(
             id = group.id,
             name = group.name,
             maxMemberCount = group.maxMemberCount,
+            currentMemberCount = group.currentMemberCount,
             ownerId = group.ownerId,
         )
     }

@@ -68,21 +68,7 @@ X-User-Id: 1
 
 ## 위치(Location) API
 
-### 1. 위치 업데이트 (alice가 그룹 2에서 위치 업데이트)
-PUT {{baseUrl}}/groups/2/location
-Content-Type: application/json
-X-User-Id: 1
-
-{
-  "locations": [
-    {
-      "latitude": 37.4979,
-      "longitude": 127.0276
-    }
-  ]
-}
-
-### 2. 위치 업데이트 (bob이 그룹 2에서 위치 업데이트)
+### 1. 위치 업데이트 (bob이 그룹 2에서 위치 업데이트)
 PUT {{baseUrl}}/groups/2/location
 Content-Type: application/json
 X-User-Id: 2
@@ -114,6 +100,3 @@ X-User-Id: 4
 GET {{baseUrl}}/groups/2/locations
 X-User-Id: 2
 
-### 5. 그룹 내 모든 위치 조회 (charlie가 그룹 2의 모든 사용자 위치 조회)
-GET {{baseUrl}}/groups/2/locations
-X-User-Id: 3

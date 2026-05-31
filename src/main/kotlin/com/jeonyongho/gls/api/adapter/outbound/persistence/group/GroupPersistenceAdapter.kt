@@ -18,4 +18,11 @@ class GroupRepositoryAdapter(
 
     override fun deleteById(groupId: Long) =
         groupJpaRepository.deleteById(groupId)
+
+    override fun increaseCurrentMemberCount(groupId: Long) =
+        groupJpaRepository.increaseCurrentMemberCount(groupId)
+
+    override fun decreaseCurrentMemberCount(groupId: Long) =
+        groupJpaRepository.decreaseCurrentMemberCount(groupId)
+
 }

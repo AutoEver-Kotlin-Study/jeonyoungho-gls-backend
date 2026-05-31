@@ -16,7 +16,7 @@ data class GetMyGroupsResult(
     val groupId: Long,
     val name: String,
     val maxMemberCount: Int,
-    val memberCount: Long,
+    val memberCount: Int,
 )
 
 data class JoinGroupCommand(

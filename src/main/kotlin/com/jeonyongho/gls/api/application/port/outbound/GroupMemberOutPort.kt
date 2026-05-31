@@ -9,6 +9,6 @@ interface GroupMemberOutPort {
     fun findAllByUserId(userId: Long): List<GroupMember>
     fun existsByGroupIdAndUserId(groupId: Long, userId: Long): Boolean
     fun countByGroupId(groupId: Long): Long
-    fun deleteByGroupIdAndUserId(groupId: Long, userId: Long)
+    fun deleteByGroupIdAndUserId(groupId: Long, userId: Long): Int
     fun deleteAllByGroupId(groupId: Long)
 }

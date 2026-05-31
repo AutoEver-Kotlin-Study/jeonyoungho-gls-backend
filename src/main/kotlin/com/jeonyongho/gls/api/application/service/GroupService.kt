@@ -49,16 +49,16 @@ class GroupService(
             val group = groupOutPort.findById(member.groupId) ?:
                 throw DomainException(ErrorCode.GROUP_NOT_FOUND, "그룹을 찾을 수 없습니다. groupId=${member.groupId}")
 
-            val memberCount = groupMemberOutPort.countByGroupId(group.id!!)
             GetMyGroupsResult(
-                groupId = group.id,
+                groupId = group.id!!,
                 name = group.name,
                 maxMemberCount = group.maxMemberCount,
-                memberCount = memberCount,
+                memberCount = group.currentMemberCount,
             )
         }
     }
 
+    @Transactional
     override fun joinGroup(command: JoinGroupCommand) {
         val group = groupOutPort.findById(command.groupId) ?:
             throw DomainException(ErrorCode.GROUP_NOT_FOUND, "그룹을 찾을 수 없습니다. groupId=${command.groupId}")
@@ -70,9 +70,15 @@ class GroupService(
             throw DomainException(ErrorCode.GROUP_ALREADY_JOINED, "이미 그룹에 참여한 사용자입니다. groupId=${group.id}, userId=${user.id}")
         }
 
-        val currentCount = groupMemberOutPort.countByGroupId(group.id)
-        if (currentCount >= group.maxMemberCount) { // TODO: 동시성 문제 해결 필요
-            throw DomainException(ErrorCode.GROUP_FULL, "그룹의 최대 인원 수를 초과하였습니다. groupId=${group.id}, maxMemberCount=${group.maxMemberCount}")
+        /*
+         * 동시성 문제 해결
+         * - 데모 애플리케이션은 동시요청이 많으며, Redis 또한 제한적인 환경으로 가정
+         * - 따라서 비관/낙관락을 활용하는 방식보다 애플리케이션 레벨에서 최대 멤버 수 초과 문제를 해결하는 방식을 선택
+         * - 그룹의 현재 멤버 수를 1 증가시키는 쿼리를 실행하면서, 최대 멤버 수를 초과하는 경우 0을 반환하도록 구현
+         */
+        val updated = groupOutPort.increaseCurrentMemberCount(command.groupId)
+        if (updated == 0) {
+            throw DomainException(ErrorCode.GROUP_FULL, "groupId=${command.groupId}")
         }
 
         groupMemberOutPort.save(GroupMember.create(groupId = group.id, userId = user.id))
@@ -85,6 +91,7 @@ class GroupService(
         )
     }
 
+    @Transactional
     override fun leaveGroup(command: LeaveGroupCommand) {
         val group = groupOutPort.findById(command.groupId) ?:
             throw DomainException(ErrorCode.GROUP_NOT_FOUND, "그룹을 찾을 수 없습니다. groupId=${command.groupId}")
@@ -95,7 +102,17 @@ class GroupService(
         groupMemberOutPort.findByGroupIdAndUserId(command.groupId, command.userId) ?:
             throw DomainException(ErrorCode.GROUP_MEMBER_NOT_FOUND, "그룹 멤버를 찾을 수 없습니다. groupId=${command.groupId}, userId=${command.userId}")
 
-        groupMemberOutPort.deleteByGroupIdAndUserId(command.groupId, command.userId)
+        /*
+         * 동시성 문제 해결
+         * - 데모 애플리케이션은 동시요청이 많으며, Redis 또한 제한적인 환경으로 가정
+         * - 그룹 멤버 삭제 쿼리를 실행하면서, 실제로 삭제된 행이 없는 경우(=멤버가 없는 경우) 0을 반환하도록 구현
+         * - 멤버가 존재하는 경우에만 현재 멤버 수를 1 감소시키도록 구현
+         */
+        val deleted = groupMemberOutPort.deleteByGroupIdAndUserId(command.groupId, command.userId)
+        if (deleted == 0) {
+            throw DomainException(ErrorCode.GROUP_MEMBER_NOT_FOUND, "groupId=${command.groupId}, userId=${command.userId}")
+        }
+        groupOutPort.decreaseCurrentMemberCount(command.groupId)
 
         eventPublisher.publishEvent(
             GroupMemberLeftEvent(

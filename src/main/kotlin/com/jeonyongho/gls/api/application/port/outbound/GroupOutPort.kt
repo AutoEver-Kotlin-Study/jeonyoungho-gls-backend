@@ -6,4 +6,6 @@ interface GroupOutPort {
     fun save(group: Group): Group
     fun findById(groupId: Long): Group?
     fun deleteById(groupId: Long)
+    fun increaseCurrentMemberCount(groupId: Long): Int
+    fun decreaseCurrentMemberCount(groupId: Long): Int
 }

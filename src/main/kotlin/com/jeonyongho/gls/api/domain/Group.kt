@@ -4,6 +4,7 @@ class Group(
     val id: Long?,
     val name: String,
     val maxMemberCount: Int,
+    val currentMemberCount: Int,
     val ownerId: Long
 ) {
 
@@ -14,6 +15,7 @@ class Group(
             id = 0,
             name = name,
             maxMemberCount = maxMemberCount,
+            currentMemberCount = 1,
             ownerId = ownerId,
         )
     }

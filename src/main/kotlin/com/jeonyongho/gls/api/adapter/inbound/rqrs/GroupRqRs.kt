@@ -29,7 +29,7 @@ data class GetMyGroupsRs(
     val groupId: Long,
     val name: String,
     val maxMemberCount: Int,
-    val memberCount: Long,
+    val memberCount: Int,
 ) {
     companion object {
         fun from(result: GetMyGroupsResult) = GetMyGroupsRs(
