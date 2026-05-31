@@ -122,6 +122,7 @@ class GroupService(
         )
     }
 
+    @Transactional
     override fun deleteGroup(command: DeleteGroupCommand) {
         val group = groupOutPort.findById(command.groupId) ?:
             throw DomainException(ErrorCode.GROUP_NOT_FOUND, "그룹을 찾을 수 없습니다. groupId=${command.groupId}")
