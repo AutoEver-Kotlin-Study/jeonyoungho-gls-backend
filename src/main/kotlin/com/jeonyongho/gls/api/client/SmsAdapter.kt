@@ -1,32 +1,31 @@
 package com.jeonyongho.gls.api.client
 
 import org.slf4j.LoggerFactory
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
 
 @Component
 class SmsAdapter(
     private val smsHttpClient: SmsHttpClient,
-    @Value("\${sms.service-number}") private val serviceNumber: String,
-) : SmsPort {
+) : SmsOutPort {
 
     private val log = LoggerFactory.getLogger(javaClass)
 
-    override fun send(request: SmsSendCommand) {
-        log.info("[SMS] Send request. to={}, content={}", request.to, request.content)
+    override fun send(command: SmsSendCommand) {
+        log.info("[SMS] Send request. from={}, to={}, content={}", command.from, command.to, command.content)
 
-        runCatching {
+        try {
             smsHttpClient.send(
                 SmsSendRq(
-                    from = serviceNumber,
-                    to = request.to,
-                    content = request.content,
+                    from = command.from,
+                    to = command.to,
+                    content = command.content,
                 )
             )
-        }.onSuccess {
-            log.info("[SMS] Send success. to={}", request.to)
-        }.onFailure { e ->
-            log.error("[SMS] Send failed. to={}, content={}", request.to, request.content, e)
+            log.info("[SMS] Send success. from={}, to={}, content={}", command.from, command.to, command.content)
+        } catch (e: Exception) {
+            log.error("[SMS] Send failed. from={}, to={}, content={}", command.from, command.to, command.content)
+            throw SmsSendException(command.from, command.to, "[SMS] Failed to send SMS to $command.to", e)
         }
     }
+
 }

@@ -4,12 +4,13 @@ import com.jeonyongho.gls.api.application.port.inbound.*
 import com.jeonyongho.gls.api.application.port.outbound.GroupMemberOutPort
 import com.jeonyongho.gls.api.application.port.outbound.GroupOutPort
 import com.jeonyongho.gls.api.application.port.outbound.UserOutPort
-import com.jeonyongho.gls.api.client.SmsPort
-import com.jeonyongho.gls.api.client.SmsSendCommand
 import com.jeonyongho.gls.api.domain.Group
 import com.jeonyongho.gls.api.domain.GroupMember
+import com.jeonyongho.gls.api.domain.event.GroupMemberJoinedEvent
+import com.jeonyongho.gls.api.domain.event.GroupMemberLeftEvent
 import com.jeonyongho.gls.api.exceptions.DomainException
 import com.jeonyongho.gls.api.exceptions.ErrorCode
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -19,7 +20,7 @@ class GroupService(
     private val groupOutPort: GroupOutPort,
     private val groupMemberOutPort: GroupMemberOutPort,
     private val userOutPort: UserOutPort,
-    private val smsPort: SmsPort,
+    private val eventPublisher: ApplicationEventPublisher,
 ) : CreateGroupUseCase, GetMyGroupsUseCase, JoinGroupUseCase, LeaveGroupUseCase, DeleteGroupUseCase {
 
     @Transactional
@@ -43,8 +44,8 @@ class GroupService(
     }
 
     override fun getMyGroups(query: GetMyGroupsQuery): List<GetMyGroupsResult> {
-        val myMembers = groupMemberOutPort.findAllByUserId(query.userId)
-        return myMembers.map { member ->
+        val groupMembers = groupMemberOutPort.findAllByUserId(query.userId)
+        return groupMembers.map { member ->
             val group = groupOutPort.findById(member.groupId) ?:
                 throw DomainException(ErrorCode.GROUP_NOT_FOUND, "그룹을 찾을 수 없습니다. groupId=${member.groupId}")
 
@@ -76,18 +77,12 @@ class GroupService(
 
         groupMemberOutPort.save(GroupMember.create(groupId = group.id, userId = user.id))
 
-        // TODO: Spring Event 기반 비동기 처리로 변경 필요(기존 멤버에게 SMS 발송)
-        val existingMembers = groupMemberOutPort.findAllByGroupId(group.id)
-            .filter { it.userId != user.id }
-        existingMembers.forEach { member ->
-            val memberUser = userOutPort.findById(member.userId) ?: return@forEach
-            smsPort.send(
-                SmsSendCommand(
-                    to = memberUser.phoneNumber,
-                    content = "${user.name}님이 그룹 [${group.name}]에 참여하였습니다."
-                )
+        eventPublisher.publishEvent(
+            GroupMemberJoinedEvent(
+                groupId = group.id,
+                joinedUserId = user.id,
             )
-        }
+        )
     }
 
     override fun leaveGroup(command: LeaveGroupCommand) {
@@ -102,17 +97,12 @@ class GroupService(
 
         groupMemberOutPort.deleteByGroupIdAndUserId(command.groupId, command.userId)
 
-        // TODO: Spring Event 기반 비동기 처리로 변경 필요(남은 멤버에게 SMS 발송)
-        val remainingMembers = groupMemberOutPort.findAllByGroupId(command.groupId)
-        remainingMembers.forEach { member ->
-            val memberUser = userOutPort.findById(member.userId) ?: return@forEach
-            smsPort.send(
-                SmsSendCommand(
-                    to = memberUser.phoneNumber,
-                    content = "${user.name}님이 그룹 [${group.name}]에서 퇴장하였습니다.",
-                )
+        eventPublisher.publishEvent(
+            GroupMemberLeftEvent(
+                groupId = group.id!!,
+                leftMemberId = user.id!!,
             )
-        }
+        )
     }
 
     override fun deleteGroup(command: DeleteGroupCommand) {
