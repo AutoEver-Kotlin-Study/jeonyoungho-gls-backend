@@ -1,0 +1,102 @@
+### GLS Backend API
+
+@baseUrl = http://localhost:8080
+
+# 사용자 ID
+# User ID 1: alice
+# User ID 2: bob
+# User ID 3: charlie
+# User ID 4: david
+# User ID 5: emma
+# User ID 6: frank
+# User ID 7: grace
+# User ID 8: henry
+# User ID 9: isabella
+# User ID 10: jack
+
+## 그룹(Group) API
+
+### 1. 그룹 생성 (alice가 그룹 생성)
+POST {{baseUrl}}/groups
+Content-Type: application/json
+X-User-Id: 1
+
+{
+  "name": "강남역 만남",
+  "maxMemberCount": 5
+}
+
+### 2. 그룹 생성 (bob이 그룹 생성)
+POST {{baseUrl}}/groups
+Content-Type: application/json
+X-User-Id: 2
+
+{
+  "name": "홍대 카페 모임",
+  "maxMemberCount": 3
+}
+
+### 3. 소속된 그룹 목록 조회 (alice의 그룹)
+GET {{baseUrl}}/groups
+X-User-Id: 1
+
+### 4. 소속된 그룹 목록 조회 (bob의 그룹)
+GET {{baseUrl}}/groups
+X-User-Id: 2
+
+### 5. 그룹 참여 (bob이 alice의 그룹에 참여)
+POST {{baseUrl}}/groups/1/join
+X-User-Id: 2
+
+### 6. 그룹 참여 (charlie가 alice의 그룹에 참여)
+POST {{baseUrl}}/groups/1/join
+X-User-Id: 3
+
+### 7. 그룹 참여 (david가 bob의 그룹에 참여)
+POST {{baseUrl}}/groups/2/join
+X-User-Id: 4
+
+### 8. (참여자) 그룹 퇴장 (bob이 alice의 그룹에서 퇴장)
+DELETE {{baseUrl}}/groups/1/leave
+X-User-Id: 2
+
+### 9. 그룹 삭제 (alice가 자신의 그룹 1 삭제)
+DELETE {{baseUrl}}/groups/1
+X-User-Id: 1
+
+---
+
+## 위치(Location) API
+
+### 1. 위치 업데이트 (bob이 그룹 2에서 위치 업데이트)
+PUT {{baseUrl}}/groups/2/location
+Content-Type: application/json
+X-User-Id: 2
+
+{
+  "locations": [
+    {
+      "latitude": 37.5531,
+      "longitude": 126.9216
+    }
+  ]
+}
+
+### 3. 위치 업데이트 (david가 그룹 2에서 위치 업데이트)
+PUT {{baseUrl}}/groups/2/location
+Content-Type: application/json
+X-User-Id: 4
+
+{
+  "locations": [
+    {
+      "latitude": 37.5666,
+      "longitude": 126.9784
+    }
+  ]
+}
+
+### 4. 그룹 내 모든 위치 조회 (bob이 그룹 2의 모든 사용자 위치 조회)
+GET {{baseUrl}}/groups/2/locations
+X-User-Id: 2
+

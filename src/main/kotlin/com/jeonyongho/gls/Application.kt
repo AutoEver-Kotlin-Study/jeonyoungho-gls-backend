@@ -1,11 +1,11 @@
-package com.jeonyongho.notification.jeonyounghoglsbackend
+package com.jeonyongho.gls
 
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 
 @SpringBootApplication
-class JeonyounghoGlsBackendApplication
+class Application
 
 fun main(args: Array<String>) {
-    runApplication<JeonyounghoGlsBackendApplication>(*args)
+    runApplication<Application>(*args)
 }
